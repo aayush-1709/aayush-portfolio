@@ -23,8 +23,9 @@ const ProjectsPage = () => (
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">AI Crop Doctor</h3>
               <div className="flex space-x-2">
+                <a href="https://ai-crop-doctor-app.onrender.com/" target="_blank" rel="noopener noreferrer">
                 <ExternalLink size={18} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
-                <Github size={18} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
+                </a>
               </div>
             </div>
             <p className="text-gray-600 text-sm mb-4">
@@ -58,7 +59,7 @@ const ProjectsPage = () => (
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">CO₂ Storage Feasibility</h3>
               <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
-                Under Review
+                Research Paper Accepted
               </span>
             </div>
             <p className="text-gray-600 text-sm mb-4">
@@ -91,7 +92,9 @@ const ProjectsPage = () => (
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">Drive-Detect</h3>
+              <a href="https://github.com/aayush-1709/Drive-Detect" target="_blank" rel="noopener noreferrer">
               <Github size={18} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
+              </a>
             </div>
             <p className="text-gray-600 text-sm mb-4">
               CNN-based machine learning model for autonomous vehicles, reaching 95% accuracy in traffic rule prediction from 40,000+ traffic board images.
@@ -117,20 +120,29 @@ const ProjectsPage = () => (
           <h3 className="text-xl font-bold text-gray-900 mb-6">Technical Skills</h3>
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Machine Learning & Deep Learning</h4>
+              <h4 className="font-semibold text-gray-800 mb-2">Programming</h4>
               <div className="flex flex-wrap gap-2">
-                {['PyTorch', 'TensorFlow', 'Scikit-learn', 'CNNs', 'ANNs'].map(skill => (
-                  <span key={skill} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">
+                {['Python', 'Java', 'Data Structures & Algorithms (DSA)'].map(skill => (
+                <span key={skill} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">
+                {skill} </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">Machine Learning</h4>
+              <div className="flex flex-wrap gap-2">
+                {['Neural Network', 'PyTorch', 'TensorFlow', 'Scikit-learn', 'Google Colab'].map(skill => (
+                  <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Generative AI & Vector Databases</h4>
+              <h4 className="font-semibold text-gray-800 mb-2">Generative AI</h4>
               <div className="flex flex-wrap gap-2">
-                {['LangChain', 'LlamaIndex', 'Hugging Face', 'RAG', 'ChromaDB'].map(skill => (
-                  <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                {['LLM Integrations', 'Retrieval-Augmented Generation (RAG)', 'LangChain', 'LlamaIndex'].map(skill => (
+                  <span key={skill} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
                     {skill}
                   </span>
                 ))}
@@ -139,8 +151,18 @@ const ProjectsPage = () => (
             <div>
               <h4 className="font-semibold text-gray-800 mb-2">Web Development</h4>
               <div className="flex flex-wrap gap-2">
-                {['React.js', 'Node.js', 'HTML', 'CSS', 'JavaScript', 'SQL'].map(skill => (
-                  <span key={skill} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                {['React.js', 'HTML', 'CSS', 'JavaScript', 'API Integration'].map(skill => (
+                  <span key={skill} className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">Database & Version Control</h4>
+              <div className="flex flex-wrap gap-2">
+                {['SQL', 'PostgreSQL', 'GitHub'].map(skill => (
+                  <span key={skill} className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">
                     {skill}
                   </span>
                 ))}
