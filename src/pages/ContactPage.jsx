@@ -46,6 +46,7 @@ const ContactPage = () => {
   };
 
   return (
+    <div className="container">
     <div className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
@@ -160,6 +161,7 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

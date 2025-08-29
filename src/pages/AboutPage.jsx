@@ -2,6 +2,7 @@ import React from 'react';
 import { Target, Trophy } from 'lucide-react';
 
 const AboutPage = () => (
+  <div className="container">
   <div className="min-h-screen bg-white px-6 py-12">
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
@@ -75,6 +76,7 @@ const AboutPage = () => (
         </div>
       </div>
     </div>
+  </div>
   </div>
 );
 

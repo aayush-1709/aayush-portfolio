@@ -2,6 +2,7 @@ import React from 'react';
 import { Target, CheckCircle, Zap } from 'lucide-react';
 
 const ExperiencePage = () => (
+  <div className="container">
   <div className="min-h-screen bg-gray-50 px-6 py-12">
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
@@ -90,6 +91,7 @@ const ExperiencePage = () => (
         </div>
       </div>
     </div>
+  </div>
   </div>
 );
 
