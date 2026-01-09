@@ -16,7 +16,7 @@ const ExperiencePage = () => (
             <div>
               <h3 className="text-xl font-bold text-gray-900">AI and ML Intern</h3>
               <p className="text-blue-600 font-medium">Prodigal AI</p>
-              <p className="text-gray-500 text-sm">June 2025 – Present</p>
+              <p className="text-gray-500 text-sm">July 2025 – August 2025</p>
             </div>
             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
               Current
