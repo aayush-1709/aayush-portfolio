@@ -48,40 +48,6 @@ const ProjectsPage = () => (
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg overflow-hidden shadow-lg">
-          <div className="h-48 bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
-            <div className="text-white text-center">
-              <div className="text-6xl mb-2">🏭</div>
-              <h3 className="text-lg font-semibold">Climate Tech</h3>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">CO₂ Storage Feasibility</h3>
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
-                Research Paper Accepted
-              </span>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">
-              Machine learning framework to predict CO₂ storage feasibility using a 20-well CCS dataset, achieving over 90% accuracy across global storage sites.
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-blue-600">
-                <Zap className="mr-2" size={16} />
-                90%+ accuracy prediction
-              </div>
-              <div className="flex items-center text-sm text-blue-600">
-                <Target className="mr-2" size={16} />
-                20-well CCS dataset analysis
-              </div>
-              <div className="flex items-center text-sm text-blue-600">
-                <CheckCircle className="mr-2" size={16} />
-                5 classification models tested
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-lg overflow-hidden shadow-lg">
           <div className="h-48 bg-gradient-to-br from-green-400 to-teal-400 flex items-center justify-center">
             <div className="text-white text-center">
