@@ -56,22 +56,42 @@ const AboutPage = () => (
             </div>
           </div>
 
-          <div className="bg-green-50 p-6 rounded-lg">
+          <div className="bg-green-50 p-6 rounded-lg border border-green-100">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Trophy className="mr-2 text-green-500" size={20} />
               Achievements
             </h3>
-            <div className="space-y-2">
-            <p className="text-sm text-gray-700 flex items-center">
-                <span className="text-green-500 mr-2">⚡</span>
-                Secured 1st place in the Inter-University Game Development Hackathon, outperforming 200+ competing teams.
-              </p>
-              <p className="text-sm text-gray-700 flex items-center">
-                <span className="text-yellow-500 mr-2">⚡</span>
-                Secured a Top 100 ranking in the competitive BYD Innovate-a-thon Hackathon through innovative ideas that
-                addressed key industry challenges in ML and AI vehicles.
-              </p>
-            </div>
+            <ul className="space-y-3 text-sm text-gray-700 list-none pl-0">
+              <li className="flex items-start gap-2">
+                <span className="text-green-500 mt-0.5 shrink-0" aria-hidden>⚡</span>
+                <span>
+                  <span className="font-semibold text-gray-900">Finalist</span>
+                  {' — '}
+                  <span className="font-semibold text-gray-900">India Innovates 2026</span> Hackathon by Municipal Corporation of Delhi
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-500 mt-0.5 shrink-0" aria-hidden>⚡</span>
+                <span>
+                  <span className="font-semibold text-gray-900">Google</span>
+                  {' — '}Secured 23rd position in PromptWar 2.0
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-500 mt-0.5 shrink-0" aria-hidden>⚡</span>
+                <span>
+                  <span className="font-semibold text-gray-900">Winner</span>
+                  {' — '}Inter-University Hackathon (200+ teams)
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-500 mt-0.5 shrink-0" aria-hidden>⚡</span>
+                <span>
+                  <span className="font-semibold text-gray-900">Top 100</span>
+                  {' — '}BYD Innovate-a-thon for automotive ML innovation
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

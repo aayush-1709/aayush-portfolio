@@ -1,7 +1,7 @@
 import React from 'react';
-import { Mail, Linkedin, Github, ExternalLink, Download, Rocket, Code, FileDown, EyeClosedIcon, View } from 'lucide-react';
+import { Mail, Linkedin, Github, Download, Rocket, Code } from 'lucide-react';
 
-const HomePage = ({ setCurrentPage }) => (
+const HomePage = ({ onViewWork }) => (
   <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center px-6">
     <div className="text-center max-w-4xl">
       <div className="mb-8 mt-10">
@@ -39,7 +39,8 @@ const HomePage = ({ setCurrentPage }) => (
       
       <div className="flex justify-center space-x-4 mb-8">
         <button 
-          onClick={() => setCurrentPage('projects')}
+          type="button"
+          onClick={onViewWork}
           className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
         >
           <Rocket size={20} />
