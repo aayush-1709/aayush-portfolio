@@ -16,7 +16,13 @@ const AboutPage = () => (
           <h2 className="text-2xl font-bold text-gray-900 mb-6">My Journey</h2>
           <div className="prose text-gray-600 mb-8">
             <p className="mb-4">
-            I’m currently pursuing a Bachelor’s in Technology at University School of Automation and Robotics - Guru Gobind Singh Indraprastha University, after starting my academic journey with a diploma in Mechanical Engineering. My passion for extracting insights from data and applying them to solve real-world challenges inspired me to transition into the field of AIML & data science. I focus on building impactful, data-driven solutions through a blend of analytics, machine learning, and software development. Along the way, I’ve gained hands-on experience with modern data science tools, frameworks, and databases, working on projects that combine technical precision with practical value.
+              My path began with a diploma in Mechanical Engineering, then led me to a B.Tech at the University School of Automation and Robotics, Guru Gobind Singh Indraprastha University—where I specialize in artificial intelligence and machine learning.
+            </p>
+            <p className="mb-4">
+              I was drawn from core engineering toward AIML and data science by a simple drive: turn raw information into decisions that matter. I build end-to-end, data-driven systems that mix analytics, machine learning, and solid software engineering.
+            </p>
+            <p>
+              Through coursework and projects, I’ve worked hands-on with modern ML stacks, databases, and deployment tooling—always aiming for solutions that are technically sound and useful outside the lab.
             </p>
           </div>
 

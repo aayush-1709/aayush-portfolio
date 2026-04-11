@@ -46,7 +46,7 @@ const HomePage = ({ onViewWork }) => (
           <Rocket size={20} />
           <span>View My Work</span>
         </button>
-        <a href="https://drive.google.com/file/d/19p4LoIAH6FKWZZ-p5QIC5XnEPAZVoXaQ/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="border border-blue-500 text-blue-500 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-2">
+        <a href="https://docs.google.com/document/d/11SRRlDxPTiYLPa7oO6E3uJTVYQq_UChgIbM0Erdjc30/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="border border-blue-500 text-blue-500 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center space-x-2">
           <Download size={20} />
           <span>View Resume</span>
         </a>
