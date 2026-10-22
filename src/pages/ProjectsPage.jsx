@@ -1,379 +1,338 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ExternalLink, Github, CheckCircle, X, Images } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ExternalLink, Github, CheckCircle, X, ArrowUpRight } from 'lucide-react';
 import { getProjectMedia } from '../utils/projectAssets';
+import Section from '../components/Section';
+import Reveal from '../components/Reveal';
+import GithubActivity from '../components/GithubActivity';
+import ProjectFinder from '../components/ProjectFinder';
+import { track } from '../lib/analytics';
+import { SITE } from '../data/site';
+import { FILTERS, PROJECTS } from '../data/projects';
 
-const GITHUB_PROFILE = 'https://github.com/aayush-1709';
-
-const LINKS = {
-  cloudmentor: {
-    live: 'http://ec2-13-232-55-143.ap-south-1.compute.amazonaws.com/',
-    repo: 'https://github.com/aayush-1709/cloud-mentor',
-  },
-  cropdoctor: {
-    live: 'https://ai-crop-doctor-app.onrender.com/',
-    repo: 'https://github.com/aayush-1709/ai-crop-disease-detection-agent',
-  },
-  langchain: {
-    repo: 'https://github.com/aayush-1709/langchain-bot',
-  },
-  drivedetect: {
-    live: 'https://drive-detect.onrender.com',
-    repo: 'https://github.com/aayush-1709/Drive-Detect',
-  },
-};
-
-/** @type {const} — `folder` must match directory name under src/assets/ */
-const PROJECT_CONFIG = [
-  {
-    id: 'cloudmentor',
-    folder: 'cloudmentor',
-    cardClass: 'bg-gradient-to-br from-sky-50 to-indigo-50 border-sky-100',
-    logoWrapClass: 'bg-white/80',
-    accent: 'indigo',
-    title: 'CloudMentor AI',
-    subtitle: 'AI-Powered AWS Skill Mastery Platform',
-    date: 'Feb 2026',
-    tech: 'React.js · Next.js · FastAPI · PostgreSQL · AWS (S3, EC2, VPC) · Amazon Bedrock',
-    bullets: [
-      'Currently building an AI-driven cloud learning platform simulating real-world AWS environments with intelligent mentorship and adaptive learning paths.',
-      'Designed AI-powered modules including real-time AWS console supervision, certification readiness prediction, security misconfiguration analysis, and scenario-based evaluation for personalized learning.',
-      'Developed end-to-end architecture using AWS services, enabling scalable deployment, seamless API integration, and interactive dashboards for progress tracking and skill analytics.',
-    ],
-    links: LINKS.cloudmentor,
-  },
-  {
-    id: 'cropdoctor',
-    folder: 'cropdoctor',
-    cardClass: 'bg-gradient-to-br from-yellow-50 to-orange-50 border-amber-100',
-    logoWrapClass: 'bg-white/80',
-    accent: 'orange',
-    title: 'AI Crop Doctor',
-    subtitle: 'June 2025 · repo: ai-crop-disease-detection-agent',
-    date: null,
-    tech: 'TensorFlow · Keras · PyTorch · CNN · Python · HTML · JS · Firebase · Gemini',
-    bullets: [
-      'Full-stack GenAI + vision system for plant disease detection (38 classes) on 70k+ images with 96%+ accuracy.',
-      'Implemented an LLM-grounded reasoning layer for action-oriented recommendations, context-aware disease explanations, and a custom contextual chatbot to support farmers in field testing.',
-    ],
-    links: LINKS.cropdoctor,
-  },
-  {
-    id: 'langchain',
-    folder: 'langchain',
-    cardClass: 'bg-gradient-to-br from-violet-50 to-purple-50 border-violet-100',
-    logoWrapClass: 'bg-white/80',
-    accent: 'violet',
-    title: 'Langchain Assistant',
-    subtitle: 'Jan 2026 · repo: langchain-bot',
-    date: null,
-    tech: 'RAG · LangChain · Bot · Data Indexing · ChromaDB',
-    bullets: [
-      'Built a RAG-based knowledge assistant using LangChain, with PDF, CSV, and TXT ingestion and chunking for accurate, context-aware natural language querying.',
-      'Implemented ChromaDB with 10k+ embeddings and optimized similarity search, plus CLI and Streamlit interfaces for ingestion and querying, achieving sub-second responses and faster retrieval.',
-    ],
-    links: LINKS.langchain,
-  },
-  {
-    id: 'drivedetect',
-    folder: 'drivedetect',
-    cardClass: 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100',
-    logoWrapClass: 'bg-white/80',
-    accent: 'emerald',
-    title: 'Drive-Detect',
-    subtitle: 'Pinned on GitHub — CNN-based traffic sign recognition for intelligent driving (40k+ images, high accuracy).',
-    date: null,
-    tech: null,
-    bullets: null,
-    bodyText:
-      'TypeScript stack with a trained model on large traffic-sign datasets for robust recognition—suitable for ADAS and autonomous driving research. Live app on Render; open source on GitHub.',
-    links: LINKS.drivedetect,
-  },
-];
-
-const accentCheck = {
-  indigo: 'text-indigo-500',
-  orange: 'text-orange-500',
-  violet: 'text-violet-500',
-  emerald: 'text-emerald-500',
-};
-
-function ProjectLinks({ live, repo }) {
+const ProjectLinks = ({ live, repo, large = false }) => {
   const stop = (e) => e.stopPropagation();
+  const base = large ? 'btn-secondary !py-2.5' : 'inline-flex items-center gap-1.5 text-sm font-medium transition-colors';
   return (
-    <div className="flex items-center gap-3 shrink-0" role="group" aria-label="Project links">
-      {live ? (
+    <div className="flex flex-wrap items-center gap-3">
+      {live && (
         <a
           href={live}
           target="_blank"
           rel="noopener noreferrer"
           onClick={stop}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-          aria-label="Open live demo in new tab"
+          className={`${base} ${large ? '' : 'text-indigo-600 hover:text-indigo-500 dark:text-indigo-400'}`}
         >
-          <ExternalLink size={18} className="opacity-80" />
-          Live
+          <ExternalLink size={16} /> Live demo
         </a>
-      ) : null}
-      <a
-        href={repo}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={stop}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-        aria-label="View source on GitHub"
-      >
-        <Github size={18} />
-        Code
-      </a>
+      )}
+      {repo && (
+        <a
+          href={repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={stop}
+          className={`${base} ${large ? '' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+        >
+          <Github size={16} /> Code
+        </a>
+      )}
     </div>
   );
-}
+};
 
-function GalleryModal({ folder, title, onClose }) {
-  const { gallery } = getProjectMedia(folder);
+const Cover = ({ project, className = '' }) => {
+  const { logoUrl, gallery } = getProjectMedia(project.folder);
+  const shot = gallery[0]?.url;
+  return (
+    <div className={`relative overflow-hidden bg-gradient-to-br ${project.gradient} ${className}`}>
+      {shot ? (
+        <img
+          src={shot}
+          alt={`${project.title} screenshot`}
+          loading="lazy"
+          className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+        />
+      ) : (
+        logoUrl && (
+          <img
+            src={logoUrl}
+            alt={`${project.title} logo`}
+            loading="lazy"
+            className="mx-auto h-full max-h-32 w-auto object-contain p-6"
+          />
+        )
+      )}
+      {shot && logoUrl && (
+        <img
+          src={logoUrl}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          className="absolute bottom-3 left-3 h-10 w-10 rounded-lg bg-white/90 object-contain p-1 shadow-md"
+        />
+      )}
+    </div>
+  );
+};
 
+const CaseStudyModal = ({ project, onClose }) => {
+  const { gallery } = getProjectMedia(project.folder);
+
+  const dialogRef = useRef(null);
+
+  // Lock scroll, close on Escape, trap Tab inside the dialog, and restore focus on close.
   useEffect(() => {
+    const opener = document.activeElement;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, []);
-
-  useEffect(() => {
+    const focusables = () =>
+      dialogRef.current?.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [];
+    focusables()[0]?.focus();
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') return onClose();
+      if (e.key !== 'Tab') return undefined;
+      const items = focusables();
+      if (!items.length) return undefined;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+      return undefined;
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+      opener?.focus?.();
+    };
   }, [onClose]);
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="gallery-modal-title"
+      aria-labelledby="case-title"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl"
+        ref={dialogRef}
+        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur">
-          <div className="flex items-center gap-2 min-w-0">
-            <Images className="text-gray-500 shrink-0" size={22} aria-hidden />
-            <h2 id="gallery-modal-title" className="text-lg font-semibold text-gray-900 truncate">
-              {title}
-            </h2>
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-500">
+              Case study · {project.status}
+            </p>
+            <h3 id="case-title" className="font-display text-2xl font-bold text-slate-900 dark:text-white">
+              {project.title}
+            </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-            aria-label="Close gallery"
+            aria-label="Close case study"
+            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
           >
             <X size={22} />
           </button>
         </div>
 
-        <div className="p-4 md:p-6">
-          {gallery.length === 0 ? (
-            <p className="text-sm text-gray-600 leading-relaxed">
-              No gallery images yet. Add image files (PNG, JPG, WebP, etc.) to{' '}
-              <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-800">
-                src/assets/{folder}/
-              </code>{' '}
-              besides <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">logo.png</code>. New files are picked up automatically when you save and the app reloads.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {gallery.map(({ file, url }) => (
-                <figure key={file} className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                  <img src={url} alt={`${title} — ${file}`} className="w-full h-auto max-h-[min(70vh,520px)] object-contain object-center" loading="lazy" />
-                  <figcaption className="px-2 py-1.5 text-xs text-gray-500 truncate">{file}</figcaption>
-                </figure>
+        <div className="space-y-7 p-6">
+          <div>
+            <h4 className="mb-2 font-semibold text-slate-900 dark:text-white">Overview</h4>
+            <p className="text-slate-600 dark:text-slate-400">{project.overview}</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {project.metrics.map((m) => (
+              <span
+                key={m}
+                className="rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
+              >
+                {m}
+              </span>
+            ))}
+          </div>
+
+          <div>
+            <h4 className="mb-3 font-semibold text-slate-900 dark:text-white">What I built</h4>
+            <ul className="space-y-3">
+              {project.highlights.map((h) => (
+                <li key={h} className="flex items-start text-slate-600 dark:text-slate-400">
+                  <CheckCircle className="mr-2.5 mt-1 shrink-0 text-indigo-500" size={16} />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="mb-3 font-semibold text-slate-900 dark:text-white">Tech stack</h4>
+            <div className="flex flex-wrap gap-2">
+              {project.tech.map((t) => (
+                <span key={t} className="tag">
+                  {t}
+                </span>
               ))}
             </div>
+          </div>
+
+          {gallery.length > 0 && (
+            <div>
+              <h4 className="mb-3 font-semibold text-slate-900 dark:text-white">Screenshots</h4>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {gallery.map(({ file, url }) => (
+                  <img
+                    key={file}
+                    src={url}
+                    alt={`${project.title} screenshot`}
+                    loading="lazy"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 object-contain dark:border-slate-700 dark:bg-slate-800"
+                  />
+                ))}
+              </div>
+            </div>
           )}
+
+          <ProjectLinks live={project.live} repo={project.repo} large />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default function ProjectsPage() {
-  const [openFolder, setOpenFolder] = useState(null);
+  const [filter, setFilter] = useState('All');
+  const [openId, setOpenId] = useState(null);
 
-  const openConfig = openFolder ? PROJECT_CONFIG.find((p) => p.folder === openFolder) : null;
+  const visible = useMemo(() => PROJECTS.filter((p) => filter === 'All' || p.categories.includes(filter)), [filter]);
+  const openProject = PROJECTS.find((p) => p.id === openId);
+  const openCase = (id) => {
+    setOpenId(id);
+    track('project_open', { project: id });
+  };
+  const closeModal = useCallback(() => setOpenId(null), []);
 
-  const closeModal = useCallback(() => setOpenFolder(null), []);
+  // Lets the terminal, palette and voice control open a case study directly.
+  useEffect(() => {
+    const onOpen = (e) => {
+      if (!PROJECTS.some((p) => p.id === e.detail)) return;
+      setFilter('All');
+      setOpenId(e.detail);
+      track('project_open', { project: e.detail, source: 'command' });
+    };
+    window.addEventListener('open-project', onOpen);
+    return () => window.removeEventListener('open-project', onOpen);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white px-6 py-12">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Projects & Skills</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            AI/ML builds and GenAI systems — repos and demos from{' '}
-            <a
-              href={GITHUB_PROFILE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 font-medium underline underline-offset-2"
+    <Section
+      id="projects"
+      eyebrow="Projects"
+      title="Things I've built"
+      subtitle="AI/ML builds and GenAI systems. Open a card for the full case study."
+      alt
+    >
+      <ProjectFinder />
+
+      <Reveal className="mb-10 flex flex-wrap justify-center gap-2">
+        {FILTERS.map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setFilter(f)}
+            aria-pressed={filter === f}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+              filter === f
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25'
+                : 'border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+            }`}
+          >
+            {f}
+          </button>
+        ))}
+      </Reveal>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {visible.map((project, i) => (
+          <Reveal key={project.id} delay={i * 80}>
+            <article
+              role="button"
+              data-tilt
+              tabIndex={0}
+              onClick={() => openCase(project.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openCase(project.id);
+                }
+              }}
+              aria-label={`Open ${project.title} case study`}
+              className="card card-hover group flex h-full cursor-pointer flex-col overflow-hidden"
             >
-              github.com/aayush-1709
-            </a>
-          </p>
-          <p className="mt-3 text-sm text-gray-500">Click a project card to open its image gallery.</p>
-        </div>
-
-        <div className="space-y-8 mb-12">
-          {PROJECT_CONFIG.map((project) => {
-            const { logoUrl, gallery } = getProjectMedia(project.folder);
-            const hasGalleryHint = gallery.length > 0;
-            const checkClass = accentCheck[project.accent] || 'text-gray-500';
-
-            return (
-              <article
-                key={project.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => setOpenFolder(project.folder)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setOpenFolder(project.folder);
-                  }
-                }}
-                className={`rounded-xl overflow-hidden shadow-lg border text-left cursor-pointer transition-shadow hover:shadow-xl hover:ring-2 hover:ring-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${project.cardClass}`}
-              >
-                <div className={`flex flex-col sm:flex-row sm:items-stretch border-b border-black/5 ${project.logoWrapClass}`}>
-                  <div className="flex items-center justify-center p-6 sm:w-44 md:w-52 shrink-0 border-b sm:border-b-0 sm:border-r border-black/5">
-                    {logoUrl ? (
-                      <img
-                        src={logoUrl}
-                        alt={`${project.title} logo`}
-                        className="max-h-24 sm:max-h-28 w-full max-w-[180px] object-contain"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-24 w-full max-w-[160px] items-center justify-center rounded-lg bg-gray-200/80 text-3xl text-gray-500" aria-hidden>
-                        ◆
-                      </div>
-                    )}
+              <Cover project={project} className="h-44" />
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">{project.title}</h3>
+                    <p className="text-xs text-slate-500">{project.status}</p>
                   </div>
-                  <div className="flex-1 px-4 py-3 sm:py-4 flex items-center justify-between gap-3 min-w-0">
-                    <div className="min-w-0">
-                      <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
-                      {project.date ? <p className="text-sm text-gray-500 mt-0.5">{project.date}</p> : null}
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{project.subtitle}</p>
-                    </div>
-                    <div className="hidden sm:flex flex-col items-end gap-1 shrink-0 text-xs text-gray-500">
-                      <span className="inline-flex items-center gap-1">
-                        <Images size={14} />
-                        {hasGalleryHint ? `${gallery.length} in gallery` : 'Gallery'}
-                      </span>
-                    </div>
-                  </div>
+                  <ArrowUpRight
+                    className="shrink-0 text-slate-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-indigo-500"
+                    size={20}
+                  />
                 </div>
+                <p className="mt-3 text-slate-600 dark:text-slate-400">{project.tagline}</p>
 
-                <div className="p-6 md:p-8">
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-                    <ProjectLinks live={project.links.live} repo={project.links.repo} />
-                  </div>
-                  {project.tech ? (
-                    <p
-                      className={`text-xs font-medium mb-4 ${
-                        project.accent === 'indigo'
-                          ? 'text-indigo-700'
-                          : project.accent === 'orange'
-                            ? 'text-amber-800'
-                            : 'text-violet-800'
-                      }`}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.metrics.map((m) => (
+                    <span
+                      key={m}
+                      className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300"
                     >
-                      {project.tech}
-                    </p>
-                  ) : null}
-                  {project.bullets ? (
-                    <ul className="space-y-3 text-gray-700 text-sm">
-                      {project.bullets.map((text, i) => (
-                        <li key={`${project.id}-b-${i}`} className="flex items-start">
-                          <CheckCircle className={`mr-2 mt-0.5 flex-shrink-0 ${checkClass}`} size={16} />
-                          {text}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-700 text-sm">{project.bodyText}</p>
-                  )}
+                      {m}
+                    </span>
+                  ))}
                 </div>
-              </article>
-            );
-          })}
-        </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {project.tech.slice(0, 5).map((t) => (
+                    <span key={t} className="tag">
+                      {t}
+                    </span>
+                  ))}
+                  {project.tech.length > 5 && <span className="tag">+{project.tech.length - 5}</span>}
+                </div>
 
-        <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-6 md:p-8 shadow-inner border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Technical Skills</h3>
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Programming</h4>
-              <div className="flex flex-wrap gap-2">
-                {['Python', 'Java'].map((skill) => (
-                  <span key={skill} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                    {skill}
-                  </span>
-                ))}
+                <div className="mt-auto pt-5">
+                  <ProjectLinks live={project.live} repo={project.repo} />
+                </div>
               </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Machine Learning &amp; GenAI</h4>
-              <div className="flex flex-wrap gap-2">
-                {['Neural Networks', 'PyTorch', 'TensorFlow', 'Scikit-learn', 'RAG', 'LangChain', 'LLMs'].map((skill) => (
-                  <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Web &amp; APIs</h4>
-              <div className="flex flex-wrap gap-2">
-                {['React.js', 'Next.js', 'HTML', 'CSS', 'JavaScript', 'FastAPI', 'REST APIs'].map((skill) => (
-                  <span key={skill} className="px-2 py-1 bg-yellow-100 text-yellow-900 text-xs rounded">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Database, cloud &amp; tools</h4>
-              <div className="flex flex-wrap gap-2">
-                {['MySQL', 'PostgreSQL', 'AWS', 'GitHub', 'JIRA', 'Postman', 'Vercel', 'Render'].map((skill) => (
-                  <span key={skill} className="px-2 py-1 bg-red-100 text-red-900 text-xs rounded">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-          <p className="mt-8 text-center text-sm text-gray-600">
-            <a
-              href={GITHUB_PROFILE}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-medium text-blue-600 hover:text-blue-800"
-            >
-              <Github size={18} />
-              Browse all repositories on GitHub
-            </a>
-          </p>
-        </div>
+            </article>
+          </Reveal>
+        ))}
       </div>
 
-      {openFolder && openConfig ? (
-        <GalleryModal folder={openFolder} title={openConfig.title} onClose={closeModal} />
-      ) : null}
-    </div>
+      <p className="mt-10 text-center">
+        <a
+          href={SITE.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+        >
+          <Github size={18} /> Browse all repositories on GitHub
+        </a>
+      </p>
+
+      <GithubActivity />
+
+      {openProject && <CaseStudyModal project={openProject} onClose={closeModal} />}
+    </Section>
   );
 }
