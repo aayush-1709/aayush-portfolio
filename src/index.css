@@ -1,3 +1,5 @@
+@import './themes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,4 +8,193 @@
   html {
     scroll-behavior: smooth;
   }
+  body {
+    @apply bg-white font-sans text-slate-700 antialiased dark:bg-slate-950 dark:text-slate-300;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-950;
+  }
+  ::selection {
+    @apply bg-indigo-500/30;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent;
+  }
+  .card {
+    @apply relative rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 dark:border-slate-800 dark:bg-slate-900;
+  }
+  .card-hover {
+    @apply hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:border-indigo-500/50;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/30;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-800 backdrop-blur transition hover:-translate-y-0.5 hover:border-indigo-400 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-indigo-400 dark:hover:text-indigo-300;
+  }
+  .tag {
+    @apply rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(148 163 184 / 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 163 184 / 0.12) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Futuristic effects (all gated on html[data-fx='on']) ---------- */
+
+/* Ambient aurora behind everything; sections turn translucent so it shows through. */
+html[data-fx='on'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(45rem 32rem at 12% 8%, rgb(var(--indigo-500) / 0.16), transparent 70%),
+    radial-gradient(40rem 30rem at 92% 40%, rgb(var(--fuchsia-500) / 0.12), transparent 70%),
+    radial-gradient(48rem 34rem at 30% 105%, rgb(var(--violet-500) / 0.14), transparent 70%);
+}
+html[data-fx='on'] main section {
+  background-color: transparent !important;
+}
+
+/* CRT-style scanlines, very faint */
+html[data-fx='on'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.025) 2px 3px);
+}
+html.dark[data-fx='on'] body::after {
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(255 255 255 / 0.018) 2px 3px);
+}
+
+/* Glass cards */
+html[data-fx='on'] .card {
+  background-color: rgb(255 255 255 / 0.65);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+html.dark[data-fx='on'] .card {
+  background-color: rgb(15 23 42 / 0.55);
+}
+
+/* Mouse-following spotlight (--mx/--my are set by useSpotlight) */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--indigo-500) / 0.16), transparent 60%);
+}
+html[data-fx='on'] .card:hover::before {
+  opacity: 1;
+}
+
+/* HUD corner brackets on hover */
+html[data-fx='on'] .card::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  --b: linear-gradient(rgb(var(--indigo-400)), rgb(var(--indigo-400)));
+  background:
+    var(--b) top left / 12px 1.5px no-repeat,
+    var(--b) top left / 1.5px 12px no-repeat,
+    var(--b) top right / 12px 1.5px no-repeat,
+    var(--b) top right / 1.5px 12px no-repeat,
+    var(--b) bottom left / 12px 1.5px no-repeat,
+    var(--b) bottom left / 1.5px 12px no-repeat,
+    var(--b) bottom right / 12px 1.5px no-repeat,
+    var(--b) bottom right / 1.5px 12px no-repeat;
+}
+html[data-fx='on'] .card:hover::after {
+  opacity: 0.9;
+}
+
+/* Neon glow on gradient text and primary buttons */
+html[data-fx='on'] .gradient-text {
+  filter: drop-shadow(0 0 14px rgb(var(--indigo-500) / 0.35));
+}
+html[data-fx='on'] .btn-primary {
+  box-shadow: 0 0 22px rgb(var(--indigo-500) / 0.45);
+}
+
+/* Glitch on hover for elements that opt in */
+html[data-fx='on'] .glitch-hover:hover {
+  animation: glitch 0.35s steps(2) 1;
+}
+
+/* Terminal */
+.term-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.term-scroll::-webkit-scrollbar-thumb {
+  background: rgb(var(--indigo-500) / 0.4);
+  border-radius: 4px;
+}
+
+/* Effects off: calm everything down */
+html[data-fx='off'] .animate-float,
+html[data-fx='off'] .animate-float-slow,
+html[data-fx='off'] .animate-marquee {
+  animation: none;
+}
+
+/* Experience timeline: roles light up as the scroll line reaches them */
+.tl-node {
+  opacity: 0.45;
+  filter: grayscale(0.7);
+  transition: opacity 0.5s, filter 0.5s, box-shadow 0.5s;
+}
+li[data-lit='true'] > .tl-node {
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 0 22px rgb(var(--indigo-500) / 0.55);
+}
+.timeline-line {
+  box-shadow: 0 0 10px rgb(var(--indigo-500) / 0.6);
 }

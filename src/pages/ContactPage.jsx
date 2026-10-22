@@ -1,169 +1,192 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { db } from '../firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { Mail, MapPin, Github, Linkedin, Copy, Check, Send, CheckCircle2, CalendarDays } from 'lucide-react';
+import Section from '../components/Section';
+import Reveal from '../components/Reveal';
+import { SITE, BOOKING_URL } from '../data/site';
+import { track } from '../lib/analytics';
+
+const EMPTY = { name: '', email: '', subject: '', message: '', website: '' };
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const inputClass =
+  'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-white';
 
 const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-  const [isSending, setIsSending] = useState(false);
-  const [sendError, setSendError] = useState('');
+  const [formData, setFormData] = useState(EMPTY);
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  const handleFormChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const set = (field) => (e) => setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(SITE.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = `mailto:${SITE.email}`;
+    }
   };
 
-  const handleSubmitMessage = async () => {
-    if (!formData.name || !formData.email || !formData.message) {
-      setSendError('Please fill in name, email, and message.');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.website) return; // honeypot
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setError('Please fill in your name, email and message.');
+      setStatus('error');
       return;
     }
-    setSendError('');
-    setIsSending(true);
+    if (!EMAIL_RE.test(formData.email.trim())) {
+      setError('Please enter a valid email address.');
+      setStatus('error');
+      return;
+    }
+    setError('');
+    setStatus('sending');
     try {
+      const [{ db }, { addDoc, collection, serverTimestamp }] = await Promise.all([
+        import('../firebase'),
+        import('firebase/firestore'),
+      ]);
       await addDoc(collection(db, 'messages'), {
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
         subject: formData.subject || 'general',
-        message: formData.message,
+        message: formData.message.trim(),
         createdAt: serverTimestamp(),
       });
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      alert('Message sent!');
+      setFormData(EMPTY);
+      setStatus('success');
+      track('contact_submit', { subject: formData.subject || 'general' });
     } catch (err) {
       console.error(err);
-      setSendError('Failed to send message. Please try again later.');
-    } finally {
-      setIsSending(false);
+      setError(`Couldn't send your message. Please try again, or email me directly at ${SITE.email}.`);
+      setStatus('error');
     }
   };
 
   return (
-    <div className="container">
-    <div className="min-h-screen bg-gray-50 px-6 py-12">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Get In Touch</h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            I'm always interested in discussing new opportunities, innovative projects, and collaborations.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Let's Connect</h2>
-            <p className="text-gray-600 mb-8">
-            Whether you’re seeking a skilled engineer, exploring a project collaboration, or simply reaching out to connect, I’d be glad to hear from you—especially if it involves emerging technologies, innovative applications, or transformative digital solutions.
-            </p>
-
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg">
-                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <Mail className="text-white" size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Email</h3>
-                  <p className="text-gray-600">aayushsinha172@gmail.com</p>
-                </div>
+    <Section
+      id="contact"
+      eyebrow="Contact"
+      title="Let's build something together"
+      subtitle="Open to AI/ML roles, internships and collaborations. I usually reply within a day or two."
+      alt
+    >
+      <div className="grid gap-10 lg:grid-cols-5">
+        <Reveal className="space-y-5 lg:col-span-2">
+          <div className="card p-5">
+            <div className="flex items-center gap-4">
+              <span className="rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 p-3 text-white">
+                <Mail size={20} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Email</p>
+                <a href={`mailto:${SITE.email}`} className="block truncate text-sm text-slate-600 hover:text-indigo-500 dark:text-slate-400">
+                  {SITE.email}
+                </a>
               </div>
-
-              {/* <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                  <Phone className="text-white" size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Phone</h3>
-                  <p className="text-gray-600">+91 7303221709</p>
-                </div>
-              </div> */}
-
-              <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-lg">
-                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                  <MapPin className="text-white" size={20} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Location</h3>
-                  <p className="text-gray-600">New Delhi, India</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Send a Message</h3>
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleFormChange('name', e.target.value)}
-                  placeholder="Your full name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleFormChange('email', e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                <select 
-                  value={formData.subject}
-                  onChange={(e) => handleFormChange('subject', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                >
-                  <option value="">Select a subject</option>
-                  <option value="job">Job Opportunity</option>
-                  <option value="project">Project Collaboration</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                <textarea
-                  rows={5}
-                  value={formData.message}
-                  onChange={(e) => handleFormChange('message', e.target.value)}
-                  placeholder="Tell me about your project or opportunity..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors resize-none"
-                />
-              </div>
-              
-              {sendError && (
-                <p className="text-red-600 text-sm">{sendError}</p>
-              )}
               <button
-                onClick={handleSubmitMessage}
-                disabled={isSending}
-                className={`w-full bg-blue-500 text-white py-3 px-6 rounded-lg transition-colors font-medium ${isSending ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                type="button"
+                onClick={copyEmail}
+                aria-label="Copy email address"
+                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-indigo-500 dark:hover:bg-slate-800"
               >
-                {isSending ? 'Sending...' : 'Send Message'}
+                {copied ? <Check size={18} className="text-emerald-500" /> : <Copy size={18} />}
               </button>
             </div>
           </div>
-        </div>
+          <div className="card p-5">
+            <div className="flex items-center gap-4">
+              <span className="rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 p-3 text-white">
+                <MapPin size={20} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Location</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{SITE.location}</p>
+              </div>
+            </div>
+          </div>
+          {BOOKING_URL && (
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-primary w-full">
+              <CalendarDays size={18} /> Book a 30-min call
+            </a>
+          )}
+          <div className="flex gap-3">
+            <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1">
+              <Linkedin size={18} /> LinkedIn
+            </a>
+            <a href={SITE.github} target="_blank" rel="noopener noreferrer" className="btn-secondary flex-1">
+              <Github size={18} /> GitHub
+            </a>
+          </div>
+        </Reveal>
+
+        <Reveal delay={100} className="lg:col-span-3">
+          <div className="card p-6 sm:p-8">
+            {status === 'success' ? (
+              <div className="flex flex-col items-center py-10 text-center" role="status">
+                <CheckCircle2 className="mb-4 text-emerald-500" size={56} />
+                <h3 className="font-display text-2xl font-bold text-slate-900 dark:text-white">Message sent!</h3>
+                <p className="mt-2 text-slate-600 dark:text-slate-400">Thanks for reaching out. I'll get back to you soon.</p>
+                <button type="button" onClick={() => setStatus('idle')} className="btn-secondary mt-6">
+                  Send another message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">Send a message</h3>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="c-name" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Full name
+                    </label>
+                    <input id="c-name" type="text" autoComplete="name" value={formData.name} onChange={set('name')} placeholder="Your name" className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="c-email" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Email address
+                    </label>
+                    <input id="c-email" type="email" autoComplete="email" value={formData.email} onChange={set('email')} placeholder="you@example.com" className={inputClass} />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="c-subject" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Subject
+                  </label>
+                  <select id="c-subject" value={formData.subject} onChange={set('subject')} className={inputClass}>
+                    <option value="">Select a subject</option>
+                    <option value="job">Job opportunity</option>
+                    <option value="project">Project collaboration</option>
+                    <option value="general">General inquiry</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="c-message" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Message
+                  </label>
+                  <textarea id="c-message" rows={5} value={formData.message} onChange={set('message')} placeholder="Tell me about your project or opportunity..." className={`${inputClass} resize-none`} />
+                </div>
+                {/* honeypot: hidden from people, catches bots */}
+                <input type="text" tabIndex={-1} autoComplete="off" value={formData.website} onChange={set('website')} className="hidden" aria-hidden />
+
+                {status === 'error' && (
+                  <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300">
+                    {error}
+                  </p>
+                )}
+                <button type="submit" disabled={status === 'sending'} className={`btn-primary w-full ${status === 'sending' ? 'cursor-not-allowed opacity-60' : ''}`}>
+                  <Send size={18} /> {status === 'sending' ? 'Sending...' : 'Send message'}
+                </button>
+              </form>
+            )}
+          </div>
+        </Reveal>
       </div>
-    </div>
-    </div>
+    </Section>
   );
 };
 
-export default ContactPage; 
+export default ContactPage;
